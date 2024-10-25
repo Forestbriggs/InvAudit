@@ -1,0 +1,29 @@
+{
+    "name": "backend",
+    "version": "1.0.0",
+    "main": "index.js",
+    "scripts": {
+        "start": "node dist/index.js",
+        "build": "tsc",
+        "dev": "ts-node-dev --respawn --transpile-only src/index.ts"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "description": "",
+    "dependencies": {
+        "csv-parser": "^3.0.0",
+        "express": "^4.21.1",
+        "multer": "^1.4.5-lts.1",
+        "sqlite": "^5.1.1",
+        "sqlite3": "^5.1.7"
+    },
+    "devDependencies": {
+        "@types/express": "^5.0.0",
+        "@types/multer": "^1.4.12",
+        "@types/node": "^22.7.9",
+        "ts-node": "^10.9.2",
+        "ts-node-dev": "^2.0.0",
+        "typescript": "^5.6.3"
+    }
+}
