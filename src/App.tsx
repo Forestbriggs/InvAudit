@@ -3,7 +3,8 @@ import { BrowserRouter as Router, Route, Routes, Link } from 'react-router-dom';
 import HomePage from './pages/HomePage';
 import AuditPage from './pages/AuditPage';
 import AuditHistory from './pages/AuditHistory';
-import AuditHistoryDetails from './pages/AuditDiscrepancies';
+import AuditHistoryDetails from './pages/AuditHistoryDetails';
+import AuditDiscrepancies from './pages/AuditDiscrepancies';
 
 const App: React.FC = () => {
     return (
@@ -25,6 +26,7 @@ const App: React.FC = () => {
                         <Route path="/audit/:auditId" element={<AuditPage />} />
                         <Route path="/history" element={<AuditHistory />} />
                         <Route path='/audit/:auditId/details' element={<AuditHistoryDetails />} />
+                        <Route path='/audit/:auditId/discrepancies' element={<AuditDiscrepancies />} />
                     </Routes>
                 </div>
             </div>

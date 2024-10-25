@@ -91,3 +91,20 @@ export async function getAuditItems(audit_id: number) {
         throw error;
     }
 }
+
+export async function getDiscrepancies(audit_id: number) {
+    const db = await dbPromise;
+    try {
+        const discrepancies = await db.all(
+            `SELECT audit_id, name, upc, inventory_amount, actual_amount,
+            (actual_amount - inventory_amount) AS difference
+            FROM inventory
+            WHERE audit_id = ? AND inventory_amount != actual_amount`,
+            [audit_id]
+        );
+        return discrepancies;
+    } catch (error) {
+        console.error('Error fetching discrepancies:', error);
+        throw error;
+    }
+}

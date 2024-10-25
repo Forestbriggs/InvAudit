@@ -1,6 +1,6 @@
 import express, { Request, Response } from 'express';
 import multer from 'multer';
-import { createAuditTable, getAudits, insertAudit, insertInventory, updateCount, getAuditItems } from './db';
+import { createAuditTable, getAudits, insertAudit, insertInventory, updateCount, getAuditItems, getDiscrepancies } from './db';
 import csvParser from 'csv-parser';
 import fs, { PathLike } from 'fs';
 
@@ -71,11 +71,11 @@ app.get('/audit/:audit_id/items', async (req, res) => {
     }
 });
 
-// app.get('/audit/:audit_id/discrepancies', async (req: Request, res: Response) => {
-//     const { audit_id } = req.params;
-//     const discrepancies = await getDiscrepancies(audit_id); // Compare inventory amount vs actual amount
-//     res.json(discrepancies);
-// });
+app.get('/audit/:audit_id/discrepancies', async (req: Request, res: Response) => {
+    const { audit_id } = req.params;
+    const discrepancies = await getDiscrepancies(parseInt(audit_id)); // Compare inventory amount vs actual amount
+    res.json(discrepancies);
+});
 
 app.get('/', (req: Request, res: Response) => {
     res.json({ message: 'Hello from Express!' });
