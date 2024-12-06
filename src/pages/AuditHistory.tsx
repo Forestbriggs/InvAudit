@@ -5,13 +5,13 @@ const AuditHistory: React.FC = () => {
     const [history, setHistory] = useState([]);
     const [selectedAuditId, setSelectedAuditId] = useState<number | null>(null);
 
-    useEffect(() => {
-        const fetchHistory = async () => {
-            const response = await fetch('/api/history');
-            const data = await response.json();
-            setHistory(data);
-        };
+    const fetchHistory = async () => {
+        const response = await fetch('/api/history');
+        const data = await response.json();
+        setHistory(data);
+    };
 
+    useEffect(() => {
         fetchHistory();
     }, []);
 
@@ -31,6 +31,8 @@ const AuditHistory: React.FC = () => {
 
         const data = response.json();
         console.log(data);
+
+        fetchHistory();
     }
 
     return (
