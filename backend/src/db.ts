@@ -50,10 +50,10 @@ export async function insertInventory(audit_id: number, name: string, upc: strin
 }
 
 // Update inventory items count related to an audit
-export async function updateCount(audit_id: number, upc: string) {
+export async function updateCount(audit_id: number, upc: string, quantity: number) {
     const db = await dbPromise;
     const result = await db.run(
-        `UPDATE inventory SET actual_amount = actual_amount + 1 WHERE audit_id = ? AND upc = ?`,
+        `UPDATE inventory SET actual_amount = actual_amount + ${quantity} WHERE audit_id = ? AND upc = ?`,
         [audit_id, upc]
     );
 

@@ -14,6 +14,7 @@ const AuditPage: React.FC = () => {
     const navigate = useNavigate();
     const [items, setItems] = useState<Item[]>([]);
     const [upc, setUPC] = useState('');
+    const [quantity, setQuantity] = useState(1);
     const [missingUPCs, setMissingUPCs] = useState<string[]>([]);
     const [manuallyEntering, setManuallyEntering] = useState(false);
     const [scanInProgress, setScanInProgress] = useState(false); // Track whether a scan is in progress
@@ -54,6 +55,14 @@ const AuditPage: React.FC = () => {
         // Display discrepancies or handle them accordingly
         console.log(discrepancies);
         return navigate('/audit/' + auditId + '/discrepancies');
+    }
+
+    const requestConfirmation = async () => {
+        const confirmationModal = document.getElementById('confirmation_modal');
+
+        if (confirmationModal) {
+            confirmationModal.showModal();
+        }
     };
 
     const submitUPC = async () => {
@@ -63,7 +72,7 @@ const AuditPage: React.FC = () => {
         const response = await fetch('/api/update-upc', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ audit_id: auditId, upc }),
+            body: JSON.stringify({ audit_id: auditId, upc, quantity }),
         });
 
         const data = await response.json();
@@ -74,7 +83,7 @@ const AuditPage: React.FC = () => {
             setItems((prevItems) =>
                 prevItems.map((item) =>
                     item.upc === upc
-                        ? { ...item, actual_amount: item.actual_amount + 1 }
+                        ? { ...item, actual_amount: item.actual_amount + quantity }
                         : item
                 )
             );
@@ -89,40 +98,50 @@ const AuditPage: React.FC = () => {
     };
 
     return (
-        <div className="max-w-6xl mx-auto p-4 bg-gray-900 text-white">
+        <div className="max-w-6xl mx-auto p-4">
             <div className='flex justify-between'>
                 <h1 className="text-3xl mb-6">Audit in Progress</h1>
-                <button onClick={submitAudit} className="bg-green-500 p-2 rounded mb-6">
+                <button onClick={requestConfirmation} className="btn btn-success p-2 rounded mb-6">
                     Finish Audit & Show Discrepancies
                 </button>
             </div>
 
             {/* Checkbox for manual entry */}
-            <div className="mb-4">
+            <div className="mb-4 flex justify-between">
                 <label className="flex items-center">
                     <input
                         type="checkbox"
                         checked={manuallyEntering}
                         onChange={(e) => setManuallyEntering(e.target.checked)}
-                        className="mr-2"
+                        className="mr-2 checkbox checkbox-sm"
                     />
                     Manually Entering
+                </label>
+                <label className='flex gap-2 items-center mb-4'>
+                    Quantity
+                    <input
+                        type="number"
+                        className='input input-sm input-bordered'
+                        value={quantity}
+                        onChange={(e) => setQuantity(parseInt(e.target.value))}
+                    />
                 </label>
             </div>
 
             {/* UPC Input */}
             <div className="flex items-center space-x-4 mb-6">
                 <input
-                    ref={inputRef} // Attach the ref to the input
+                    aria-label='UPC input'
+                    ref={inputRef}
                     type="text"
                     value={upc}
                     onChange={handleUPCChange}
                     placeholder="Scan or Enter UPC"
-                    className="block w-full p-2 bg-gray-700 rounded-md"
+                    className="block w-full p-2  bg-gray-700 rounded-md"
                     disabled={scanInProgress} // Disable input while a scan is in progress
                 />
                 {manuallyEntering && (
-                    <button onClick={submitUPC} className="bg-blue-500 p-2 rounded" disabled={scanInProgress}>
+                    <button onClick={submitUPC} className="btn btn-sm btn-secondary" disabled={scanInProgress}>
                         Submit UPC
                     </button>
                 )}
@@ -132,10 +151,10 @@ const AuditPage: React.FC = () => {
             {missingUPCs.length > 0 && (
                 <div className="overflow-y-auto max-h-96 mb-2">
                     <div className="mt-6">
-                        <h2>Missing UPCs:</h2>
+                        <h2 className='text-lg font-semibold' >Missing UPCs:</h2>
                         <ul>
                             {missingUPCs.map((upc, index) => (
-                                <li key={`missing-${index}`} className="text-red-500">{upc}</li>
+                                <li key={`missing-${index}`} className="text-error">{upc}</li>
                             ))}
                         </ul>
                     </div>
@@ -143,19 +162,41 @@ const AuditPage: React.FC = () => {
             )}
 
             <div className="overflow-y-auto max-h-96">
-                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 border border-gray-700 p-4 rounded-lg">
                     {items.map((item) => (
-                        <div key={`item-${item.name}`} className="p-4 bg-gray-800 rounded-md">
+                        <div key={`item-${item.name}`} className="p-4 bg-base-300 rounded-md">
                             <div className="text-sm font-medium">{item.name}</div>
-                            <div className="text-xs text-gray-400">UPC: {item.upc}</div>
-                            <div className="text-xs text-gray-400">Inventory: {item.inventory_amount}</div>
+                            <div className="text-xs text-gray-500">UPC: {item.upc}</div>
+                            <div className="text-xs text-gray-500">Inventory: {item.inventory_amount}</div>
                             <div className="text-xs text-gray-200">Actual: {item.actual_amount}</div>
                         </div>
                     ))}
                 </div>
             </div>
 
-        </div>
+            <dialog id="confirmation_modal" className="modal">
+                <div className="modal-box">
+                    <h3 className="font-bold text-lg">Are you finished with your audit?</h3>
+                    <p className="py-4 text-sm text-gray-400 w-3/4">Confirming will lock you out of your audit, make sure you are finished before submitting.</p>
+                    <div className="modal-action">
+                        <button
+                            className='btn btn-success'
+                            onClick={() => {
+                                submitAudit();
+                                document.getElementById('confirmation_modal')!.close()
+                            }}
+                        >
+                            I Am Finished
+                        </button>
+                        <form method="dialog">
+                            {/* if there is a button in form, it will close the modal */}
+                            <button className="btn btn-error">Cancel</button>
+                        </form>
+                    </div>
+                </div>
+            </dialog >
+
+        </div >
     );
 };
 

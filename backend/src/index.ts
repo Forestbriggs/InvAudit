@@ -19,7 +19,7 @@ app.post('/create-audit', upload.single('file'), async (req: Request, res: Respo
     // Create new audit row
     const auditId = await insertAudit(category, new Date().toISOString());
 
-    // Parse CSV and filter based on category (you’ll need to customize this part)
+    // Parse CSV and filter based on category
     const results: any[] = [];
     fs.createReadStream(csvFilePath as PathLike)
         .pipe(csvParser())
@@ -39,10 +39,10 @@ app.post('/create-audit', upload.single('file'), async (req: Request, res: Respo
 });
 
 app.post('/update-upc', async (req: Request, res: Response) => {
-    const { audit_id, upc } = req.body;
+    const { audit_id, upc, quantity } = req.body;
 
     try {
-        const result = await updateCount(audit_id, upc);
+        const result = await updateCount(audit_id, upc, quantity);
         if (!result.success) {
             res.status(404).json({ success: false, message: 'UPC not found' });
             return;
