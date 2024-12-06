@@ -9,14 +9,14 @@ import AuditDiscrepancies from './pages/AuditDiscrepancies';
 const App: React.FC = () => {
     return (
         <Router>
-            <div className="min-h-screen bg-gray-900 text-white">
-                <nav className="bg-gray-800 p-4">
+            <div className="min-h-screen">
+                <nav className="bg-base-300 p-4">
                     <div className="container mx-auto flex justify-between items-center">
-                        <div className="text-white text-2xl font-bold">InvAudit</div>
+                        <div className="text-2xl font-bold">InvAudit</div>
                         <div className="space-x-4">
-                            <Link to="/" className="text-white hover:text-gray-300">Home</Link>
-                            <Link to="/audit" className="text-white hover:text-gray-300 hidden">Audit in Progress</Link>
-                            <Link to="/history" className="text-white hover:text-gray-300">Audit History</Link>
+                            <Link to="/" className="link no-underline hover:link-primary">Home</Link>
+                            <Link to="/audit" className="link no-underline hover:link-primary">Audit in Progress</Link>
+                            <Link to="/history" className="link no-underline hover:link-primary">Audit History</Link>
                         </div>
                     </div>
                 </nav>
