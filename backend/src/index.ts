@@ -1,6 +1,6 @@
 import express, { Request, Response } from 'express';
 import multer from 'multer';
-import { createAuditTable, getAudits, insertAudit, insertInventory, updateCount, getAuditItems, getDiscrepancies } from './db';
+import { createAuditTable, getAudits, insertAudit, insertInventory, updateCount, getAuditItems, getDiscrepancies, deleteAudit } from './db';
 import csvParser from 'csv-parser';
 import fs, { PathLike } from 'fs';
 
@@ -53,6 +53,18 @@ app.post('/update-upc', async (req: Request, res: Response) => {
         res.status(500).json({ success: false, message: 'Server error' });
     }
 });
+
+app.delete('/audit/:audit_id', async (req, res) => {
+    const { audit_id } = req.params;
+
+    try {
+        await deleteAudit(parseInt(audit_id));
+        res.json({ success: true, message: 'Successfully deleted audit' })
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ success: false, message: 'Server error' })
+    }
+})
 
 app.get('/audit/:audit_id/items', async (req, res) => {
     const { audit_id } = req.params;

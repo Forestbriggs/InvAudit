@@ -2,7 +2,7 @@ import sqlite3 from "sqlite3";
 import { open } from 'sqlite';
 import path from 'path';
 
-const dbPath = path.resolve(__dirname, '../data/audit.db');
+const dbPath = path.resolve(__dirname, '../data/audits.db');
 
 const dbPromise = open({
     filename: dbPath,
@@ -11,6 +11,9 @@ const dbPromise = open({
 
 export async function createAuditTable() {
     const db = await dbPromise;
+
+    await db.exec('PRAGMA foreign_keys = ON;');
+
     await db.exec(`
         CREATE TABLE IF NOT EXISTS audits (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -18,6 +21,7 @@ export async function createAuditTable() {
             date_performed DATETIME
         )
     `);
+
     await db.exec(`
         CREATE TABLE IF NOT EXISTS inventory (
             audit_id INTEGER,
@@ -25,9 +29,17 @@ export async function createAuditTable() {
             upc TEXT,
             inventory_amount INTEGER,
             actual_amount INTEGER DEFAULT 0,
-            FOREIGN KEY (audit_id) REFERENCES audits(id)
+            FOREIGN KEY (audit_id) REFERENCES audits(id) ON DELETE CASCADE
         )
     `)
+}
+
+export async function deleteAudit(auditId: number) {
+    const db = await dbPromise;
+    await db.run(
+        `DELETE FROM audits WHERE id = ?`,
+        [auditId]
+    );
 }
 
 // Insert audit into audits table
@@ -53,8 +65,8 @@ export async function insertInventory(audit_id: number, name: string, upc: strin
 export async function updateCount(audit_id: number, upc: string, quantity: number) {
     const db = await dbPromise;
     const result = await db.run(
-        `UPDATE inventory SET actual_amount = actual_amount + ${quantity} WHERE audit_id = ? AND upc = ?`,
-        [audit_id, upc]
+        `UPDATE inventory SET actual_amount = actual_amount + ? WHERE audit_id = ? AND upc = ?`,
+        [quantity, audit_id, upc]
     );
 
     // Check if the row was updated (result.changes tells how many rows were affected)
