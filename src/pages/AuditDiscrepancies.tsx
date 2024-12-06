@@ -30,7 +30,7 @@ const AuditDiscrepancies: React.FC = () => {
             <ul className="space-y-4" >
                 {
                     discrepancies.map((item: Item) => (
-                        <li key={item.id} className="p-4 bg-gray-800 rounded-md" >
+                        <li key={`item-${item.name}`} className="p-4 bg-gray-800 rounded-md" >
                             <div className="text-lg font-semibold" > {item.name} </div>
                             < div className="text-sm text-gray-400" > UPC: {item.upc} </div>
                             < div className="text-sm text-gray-400" >
