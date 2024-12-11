@@ -20,6 +20,30 @@ const AuditPage: React.FC = () => {
     const [scanInProgress, setScanInProgress] = useState(false); // Track whether a scan is in progress
     const inputRef = useRef<HTMLInputElement>(null); // Create a ref for the input
 
+    useEffect(() => {
+        const handleUPArrowPress = (e: KeyboardEvent) => {
+            if (e.key === 'ArrowUp') {
+                e.preventDefault();
+                setQuantity((prevQuantity) => prevQuantity + 1);
+            }
+        };
+
+        const handleDownArrowPress = (e: KeyboardEvent) => {
+            if (e.key === 'ArrowDown') {
+                e.preventDefault();
+                setQuantity((prevQuantity) => prevQuantity - 1);
+            }
+        };
+
+        window.addEventListener('keydown', handleUPArrowPress);
+        window.addEventListener('keydown', handleDownArrowPress);
+
+        return () => {
+            window.removeEventListener('keydown', handleUPArrowPress);
+            window.removeEventListener('keydown', handleDownArrowPress);
+        };
+    }, []);
+
     // Auto-focus the input field when the component renders
     useEffect(() => {
         inputRef.current?.focus();
@@ -117,11 +141,11 @@ const AuditPage: React.FC = () => {
                     />
                     Manually Entering
                 </label>
-                <label className='flex gap-2 items-center mb-4'>
+                <label className="flex gap-2 items-center mb-4">
                     Quantity
                     <input
                         type="number"
-                        className='input input-sm input-bordered'
+                        className="input input-sm input-bordered"
                         value={quantity}
                         onChange={(e) => setQuantity(parseInt(e.target.value))}
                     />
