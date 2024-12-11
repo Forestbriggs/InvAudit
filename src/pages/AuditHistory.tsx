@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { format } from 'date-fns';
 
 const AuditHistory: React.FC = () => {
     const [history, setHistory] = useState([]);
@@ -46,10 +47,10 @@ const AuditHistory: React.FC = () => {
                         <li key={audit.id} className="p-4 border border-gray-500 rounded-md bg-gray-700 flex justify-between items-center">
                             <div>
                                 <div className="text-lg font-medium">Category: {audit.category}</div>
-                                <div className="text-gray-400">Date: {audit.date_performed}</div>
+                                <div className="text-gray-400">Date: {format(audit.date_performed, "MMMM d, yyyy")}</div>
                             </div>
                             <div className='flex gap-4'>
-                                <Link to={`/audit/${audit.id}/discrepancies`} className='btn btn-secondary'>View Details</Link>
+                                <Link to={`/audit/${audit.id}/details`} className='btn btn-secondary'>View Details</Link>
                                 <Link to={`/audit/${audit.id}/discrepancies`} className='btn btn-primary' >View Discrepancies</Link>
                                 <button className='btn btn-error' onClick={() => requestConfirmation(audit.id)}>Delete</button>
                             </div>
