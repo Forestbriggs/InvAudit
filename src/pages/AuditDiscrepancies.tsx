@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import Barcode from 'react-barcode';
 import { useParams } from 'react-router-dom';
 
 interface Item {
@@ -30,18 +31,23 @@ const AuditDiscrepancies: React.FC = () => {
             <ul className="space-y-4" >
                 {
                     discrepancies.map((item: Item) => (
-                        <li key={`item-${item.name}`} className="p-4 bg-gray-800 rounded-md" >
-                            <div className="text-lg font-semibold" > {item.name} </div>
-                            < div className="text-sm text-gray-400" > UPC: {item.upc} </div>
-                            < div className="text-sm text-gray-400" >
-                                Inventory: {item.inventory_amount}
+                        <li key={`item-${item.name}`} className="p-4 bg-gray-800 rounded-md flex items-center justify-between" >
+                            <div>
+                                <div className="text-lg font-semibold" > {item.name} </div>
+                                < div className="text-sm text-gray-400" > UPC: {item.upc} </div>
+                                < div className="text-sm text-gray-400" >
+                                    Inventory: {item.inventory_amount}
+                                </div>
+                                < div className="text-sm text-gray-200" >
+                                    Actual: {item.actual_amount}
+                                </div>
+                                < div className="text-sm font-bold" >
+                                    Difference: {item.difference > 0 ? '+' : ''}
+                                    {item.difference}
+                                </div>
                             </div>
-                            < div className="text-sm text-gray-200" >
-                                Actual: {item.actual_amount}
-                            </div>
-                            < div className="text-sm font-bold" >
-                                Difference: {item.difference > 0 ? '+' : ''}
-                                {item.difference}
+                            <div className='rounded-lg overflow-hidden inline-block'>
+                                <Barcode value={item.upc} background='white' margin={20} displayValue={false} width={1} height={75} />
                             </div>
                         </li>
                     ))
